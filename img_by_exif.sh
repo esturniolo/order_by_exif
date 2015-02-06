@@ -1,8 +1,8 @@
 #!/bin/bash
 echo "Ingrese el path absoluto de imágenes a ordenar"
-read DirOri
+read -e DirOri
 echo "Ingrese donde desea guardar las imágenes (se ordenaran en la ubicación elegida dentro de carpetas 'mes-año')"
-read DirDest
+read -e DirDest
 echo "Las imagenes en ""$DirOri"" seran ordenadas en el directorio ""$DirDest""i"
 
 read -n1 -r -p "Presione Enter para continuar o CTRL - C para abortar operación"
