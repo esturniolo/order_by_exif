@@ -19,15 +19,6 @@ for IMG in *;
 			mv $IMG $DIRDEST/$FECHA; else
 			mkdir $DIRDEST/$FECHA; mv $IMG $DIRDEST/$FECHA
                 fi
-
-#        echo "-- Comienza Case --"
-#                case $GARLOPA in
-#                                *)
-#                                        echo "Primer case"
-#                                        mkdir $DIRDEST/$FECHA && mv $IMG $DIRDEST/$FECHA
-#                                        ;;
-#                esac
-#        echo "-- Termina case --"
 done
 }
 
