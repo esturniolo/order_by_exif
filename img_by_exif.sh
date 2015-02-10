@@ -13,26 +13,31 @@ echo
 DATE=`date +%d-%m-%y_%H%M`
 TOTALFILES=`ls -l $DIRORI | wc -l`
 
-echo -n "Creando backup ..."; backup=`tar -cvzPf /tmp/Backup_Exif_$DATE.tgz $DIRORI` 2> ./error.log &
+echo -n "Creando backup ..."; backup=`tar -cvzPf /tmpe/Backup_Exif_$DATE.tgz $DIRORI` > /dev/null 2> salida.log &
 PID=$!
+RC=${PIPESTATUS[1]}
 
 while kill -0 $PID 2> /dev/null; do
 echo -n "."
 sleep 2
 done
 
-echo -n " Backup finalizado."; 
-
-RC=`echo $?`
-
-if RC eq=0; then
-	0; else
-	echo "ERROR. Por favor revise el error en el archivo 'error.log'"
-fi
-	
+echo
 echo $RC
+echo
+echo
+echo -n "Backup finalizado."; 
+echo
 
+read -n1 -r -p "~~DEBUG~~"
 
+echo
+if [ $RC -eq 0 ];then
+	echo "Backup exitoso.";else
+	echo "ERROR. Por favor revise el error en el archivo 'salida.log'"
+fi
+
+echo
 echo "Cantidad total de imágenes a ordenar "$TOTALFILES""
 echo
 
