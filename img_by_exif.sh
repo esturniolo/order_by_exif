@@ -4,6 +4,7 @@ function BKP(){
 backup=`tar -cvzPf /home/pi/ToshibaPi/Backup_Exif_$DATE.tgz $DIRORI`
 }
 
+
 function EXIF(){
 for IMG in *;
         do identify -format %[EXIF:DateTimeOriginal] $IMG && 
@@ -51,7 +52,7 @@ echo
 echo "Las imagenes en ""$DIRORI"" seran ordenadas en el directorio ""$DIRDEST"""
 echo
 
-TOTALFILES=`ls -l $DIRORI | wc -l`
+TOTALFILES=`ls $DIRORI | wc -l`
 
 echo
 echo "Cantidad total de imágenes a ordenar: "$TOTALFILES""
