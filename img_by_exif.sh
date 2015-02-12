@@ -1,4 +1,5 @@
 #!/bin/bash
+clear
 
 function BKP(){
 tar -cvzf /tmp/Backup_Exif_$DATE.tar.gz $DIRORI
@@ -52,7 +53,6 @@ fi
 }
 
 DATE=`date +%d-%m-%y_%H%M`
-TOTALFILESPOST=`find . -maxdepth 3 -type f | wc -l`
 
 echo "Ingrese el path absoluto de imágenes a ordenar"
 read -e DIRORI
@@ -106,6 +106,7 @@ cd $DIRORI
 EXIF
 
 echo "Archivos antes del proceso: "$TOTALFILES""
+cd $DIRDEST/Ordenadas
 echo "Archivos después del proceso: "$TOTALFILESPOST""
 
 COMPARADOR
