@@ -1,0 +1,1 @@
+img_by_exif.sh: line 3:  4437 Terminated              tar -cvzPf /home/pi/ToshibaPi/Backup_Exif_$DATE.tar.gz $DIRORI

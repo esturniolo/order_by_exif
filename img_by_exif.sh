@@ -1,29 +1,8 @@
 #!/bin/bash
 
 function BKP(){
-backup=`tar -cvzPf /home/pi/ToshibaPi/Backup_Exif_$DATE.tgz $DIRORI`
+tar -cvzf /tmp/Backup_Exif_$DATE.tar.gz $DIRORI
 }
-
-
-function EXIF(){
-for IMG in *;
-        do identify -format %[EXIF:DateTimeOriginal] $IMG && 
-		
-                ANIO=`echo ${IMG:0:4}` &&
-                MES=`echo ${IMG:4:4}` &&
-                TMP=`echo $MES""$ANIO` &&
-                FECHA=`echo ${TMP:1:7}` &&
-
-
-                if [ -d $DIRDEST/$FECHA ]; then
-			mv $IMG $DIRDEST/$FECHA; else
-			mkdir $DIRDEST/$FECHA; mv $IMG $DIRDEST/$FECHA
-                fi
-
-done
-
-}
-
 
 function CREA_DEST(){
 if [ -d $DIRDEST ]; then
@@ -31,6 +10,39 @@ if [ -d $DIRDEST ]; then
 	echo -n "Creando carpeta "$DIRDEST""; mkdir $DIRDEST
 fi;
 }
+
+function EXIF(){
+for IMG in *;
+        do identify -format %[EXIF:DateTimeOriginal] $IMG &&
+
+                ANIO=`echo ${IMG:0:4}` &&
+                MES=`echo ${IMG:4:4}` &&
+                TMP=`echo $MES""$ANIO` &&
+                FECHA=`echo ${TMP:1:7}` &&
+
+
+                if [ -d $DIRDEST/Ordenadas/$FECHA ]; then
+                        mv $IMG $DIRDEST/Ordenadas/$FECHA; else
+                        mkdir $DIRDEST/Ordenadas/$FECHA; mv $IMG $DIRDEST/Ordenadas/$FECHA
+                fi
+
+done
+
+}
+
+function COMPARADOR(){
+if [ "$TOTALFILES" -eq "$TOTALFILESPOST" ]; then
+	rm -r /tmp/Backup_Exif_$DATE.tar.gz; echo "Proceso finalizado con éxito"; else
+	rm -r $DIRDEST/Ordenadas/$FECHAS; RESTOREBKP; echo "Hubo diferencias en la cantidad de archivos procesados"
+
+fi
+}
+
+function RESTOREBKP(){
+cd $DIRORI
+tar -xzvf /tmp/Backup_Exif_$DATE.tar.gz
+}
+
 
 function RETORNO(){
 if [ $RC -eq 0 ];then
@@ -40,6 +52,7 @@ fi
 }
 
 DATE=`date +%d-%m-%y_%H%M`
+TOTALFILESPOST=`find . -maxdepth 3 -type f | wc -l`
 
 echo "Ingrese el path absoluto de imágenes a ordenar"
 read -e DIRORI
@@ -49,15 +62,25 @@ echo "Ingrese donde desea guardar las imágenes (se ordenaran en la ubicación e
 read -e DIRDEST
 echo
 
-echo "Las imagenes en ""$DIRORI"" seran ordenadas en el directorio ""$DIRDEST"""
+
+echo "Las imagenes en ""$DIRORI"" seran ordenadas en el directorio ""$DIRDEST""/Ordenadas"
 echo
 
-TOTALFILES=`ls $DIRORI | wc -l`
+
+mkdir $DIRDEST/Ordenadas 2> /dev/null
+
+cd $DIRORI
+TOTALFILES=`find . -type f | wc -l`
 
 echo
 echo "Cantidad total de imágenes a ordenar: "$TOTALFILES""
 echo
 
+
+
+read -n1 -r -p "BREAK"
+
+echo
 echo -n "Creando backup ..."; BKP > /dev/null 2> salida.log &
 PIDBK=$!
 
@@ -81,3 +104,8 @@ cd $DIRORI
 
 #echo "-- Empieza For --"
 EXIF
+
+echo "Archivos antes del proceso: "$TOTALFILES""
+echo "Archivos después del proceso: "$TOTALFILESPOST""
+
+COMPARADOR
