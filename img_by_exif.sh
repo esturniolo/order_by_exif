@@ -2,22 +2,24 @@
 clear
 
 function BKP(){
-tar -cvzf /tmp/Backup_Exif_$DATE.tar.gz $DIRORI
+cd $DIRORI
+rm /tmp/Backup_Exif_*.tar.gz
+tar -cvzf /tmp/Backup_Exif_$DATE.tar.gz ./
 }
 
 function CREA_DEST(){
 if [ -d $DIRDEST ]; then
 	echo; else
-	echo -n "Creando carpeta "$DIRDEST""; mkdir $DIRDEST
+	echo -n "Creando carpeta "$DIRDEST""; mkdir $DIRDEST; mkdir $DIRDEST/Ordenadas 2> /dev/null; echo
 fi;
 }
 
 function EXIF(){
 for IMG in *;
-        do identify -format %[EXIF:DateTimeOriginal] $IMG &&
+        do $TOMAEXIF $IMG &&
 
-                ANIO=`echo ${IMG:0:4}` &&
-                MES=`echo ${IMG:4:4}` &&
+                ANIO=`echo ${TOMAEXIF:0:4}` &&
+                MES=`echo ${TOMAEXIF:4:4}` &&
                 TMP=`echo $MES""$ANIO` &&
                 FECHA=`echo ${TMP:1:7}` &&
 
@@ -42,6 +44,7 @@ fi
 function RESTOREBKP(){
 cd $DIRORI
 tar -xzvf /tmp/Backup_Exif_$DATE.tar.gz
+rm /tmp/Backup_Exif_$DATE.tar.gz
 }
 
 
@@ -67,7 +70,7 @@ echo "Las imagenes en ""$DIRORI"" seran ordenadas en el directorio ""$DIRDEST""/
 echo
 
 
-mkdir $DIRDEST/Ordenadas 2> /dev/null
+#mkdir $DIRDEST/Ordenadas 2> /dev/null
 
 cd $DIRORI
 TOTALFILES=`find . -type f | wc -l`
@@ -81,7 +84,7 @@ echo
 read -n1 -r -p "BREAK"
 
 echo
-echo -n "Creando backup ..."; BKP > /dev/null 2> salida.log &
+echo -n "Creando backup ..."; BKP > /dev/null 2> /tmp/salida.log &
 PIDBK=$!
 
 while kill -0 $PIDBK 2> /dev/null; do
@@ -103,6 +106,7 @@ CREA_DEST
 cd $DIRORI
 
 #echo "-- Empieza For --"
+TOMAEXIF=`identify -format %[EXIF:DateTimeOriginal]`
 EXIF
 
 echo "Archivos antes del proceso: "$TOTALFILES""
